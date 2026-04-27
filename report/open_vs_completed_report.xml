@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Open vs Completed work orders -->
+    <record id="view_open_vs_completed_pivot" model="ir.ui.view">
+        <field name="name">maintenance.request.openvscompl.pivot</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Open vs Completed">
+                <field name="stage_id" type="row"/>
+                <field name="x_request_type" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_open_vs_completed_graph" model="ir.ui.view">
+        <field name="name">maintenance.request.openvscompl.graph</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <graph string="Open vs Completed" type="bar" stacked="True">
+                <field name="stage_id"/>
+                <field name="x_request_type"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_open_vs_completed" model="ir.actions.act_window">
+        <field name="name">Open vs Completed</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">pivot,graph,list,kanban</field>
+    </record>
+</odoo>

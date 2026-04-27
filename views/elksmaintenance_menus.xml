@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root app menu -->
+    <menuitem id="menu_elks_maint_root"
+              name="Elks Maintenance"
+              sequence="60"
+              web_icon="elksmaintenance,static/description/icon.png"
+              groups="group_elksmaint_user"/>
+
+    <!-- Dashboard (top) -->
+    <menuitem id="menu_elks_maint_dashboard"
+              name="Dashboard"
+              parent="menu_elks_maint_root"
+              action="action_trustee_dashboard_server"
+              sequence="10"
+              groups="group_elksmaint_user"/>
+
+    <!-- Requests group -->
+    <menuitem id="menu_elks_maint_requests"
+              name="Work Requests"
+              parent="menu_elks_maint_root"
+              sequence="20"/>
+
+    <menuitem id="menu_all_requests"
+              name="All Requests"
+              parent="menu_elks_maint_requests"
+              action="action_all_requests"
+              sequence="10"/>
+
+    <menuitem id="menu_deferred_backlog"
+              name="Deferred Backlog"
+              parent="menu_elks_maint_requests"
+              action="action_deferred_backlog"
+              sequence="20"/>
+
+    <!-- Assets group -->
+    <menuitem id="menu_elks_maint_assets"
+              name="Assets"
+              parent="menu_elks_maint_root"
+              sequence="30"/>
+
+    <menuitem id="menu_all_equipment"
+              name="All Assets"
+              parent="menu_elks_maint_assets"
+              action="action_all_equipment"
+              sequence="10"/>
+
+    <!-- Reports group -->
+    <menuitem id="menu_elks_maint_reports"
+              name="Reports"
+              parent="menu_elks_maint_root"
+              sequence="40"/>
+
+    <menuitem id="menu_backlog_report"
+              name="Backlog Report"
+              parent="menu_elks_maint_reports"
+              action="action_backlog_report"
+              sequence="10"/>
+
+    <menuitem id="menu_capital_plan"
+              name="5-Year Capital Plan"
+              parent="menu_elks_maint_reports"
+              action="action_capital_plan"
+              sequence="20"/>
+
+    <menuitem id="menu_priority_heatmap"
+              name="Priority Heatmap"
+              parent="menu_elks_maint_reports"
+              action="action_priority_heatmap"
+              sequence="30"/>
+
+    <menuitem id="menu_cost_per_sqft"
+              name="Maintenance Cost Trend"
+              parent="menu_elks_maint_reports"
+              action="action_cost_per_sqft"
+              sequence="40"/>
+
+    <menuitem id="menu_open_vs_completed"
+              name="Open vs Completed"
+              parent="menu_elks_maint_reports"
+              action="action_open_vs_completed"
+              sequence="50"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_elks_maint_config"
+              name="Configuration"
+              parent="menu_elks_maint_root"
+              sequence="90"
+              groups="group_elksmaint_manager"/>
+
+    <menuitem id="menu_config_stages"
+              name="Stages"
+              parent="menu_elks_maint_config"
+              action="action_maintenance_stages"
+              sequence="10"/>
+
+    <menuitem id="menu_config_teams"
+              name="Teams"
+              parent="menu_elks_maint_config"
+              action="action_maintenance_teams"
+              sequence="20"/>
+</odoo>

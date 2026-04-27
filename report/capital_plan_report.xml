@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 5-Year Capital Plan: target year × asset class, estimated cost -->
+    <record id="view_capital_plan_pivot" model="ir.ui.view">
+        <field name="name">maintenance.request.capital.pivot</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <pivot string="5-Year Capital Plan">
+                <field name="x_target_year" type="row"/>
+                <field name="x_elks_department_id" type="col"/>
+                <field name="x_estimated_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_capital_plan_graph" model="ir.ui.view">
+        <field name="name">maintenance.request.capital.graph</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <graph string="5-Year Capital Plan" type="bar" stacked="True">
+                <field name="x_target_year"/>
+                <field name="x_elks_department_id"/>
+                <field name="x_estimated_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_capital_plan" model="ir.actions.act_window">
+        <field name="name">5-Year Capital Plan</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[
+            ('x_request_type', 'in', ['deferred', 'capital']),
+            ('x_target_year', '!=', False),
+        ]</field>
+    </record>
+</odoo>

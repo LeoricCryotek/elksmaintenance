@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cost per square foot report.
+         Uses the actual cost of completed work, grouped by month/year.
+         The sq-ft divisor is taken from elks.lodge.settings.x_total_sq_ft. -->
+    <record id="view_cost_per_sqft_pivot" model="ir.ui.view">
+        <field name="name">maintenance.request.costsqft.pivot</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Maintenance Cost (Completed)">
+                <field name="close_date" type="row" interval="year"/>
+                <field name="x_elks_department_id" type="col"/>
+                <field name="x_actual_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_cost_per_sqft_graph" model="ir.ui.view">
+        <field name="name">maintenance.request.costsqft.graph</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <graph string="Maintenance Cost Over Time" type="line">
+                <field name="close_date" interval="month"/>
+                <field name="x_actual_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_cost_per_sqft" model="ir.actions.act_window">
+        <field name="name">Maintenance Cost Trend</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('stage_id.done', '=', True), ('x_actual_cost', '>', 0)]</field>
+    </record>
+</odoo>

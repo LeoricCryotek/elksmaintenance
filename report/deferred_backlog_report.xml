@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Pivot view: backlog by asset × target year -->
+    <record id="view_deferred_backlog_pivot" model="ir.ui.view">
+        <field name="name">maintenance.request.deferred.pivot</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Deferred Backlog">
+                <field name="equipment_id" type="row"/>
+                <field name="x_target_year" type="col"/>
+                <field name="x_estimated_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_deferred_backlog_graph" model="ir.ui.view">
+        <field name="name">maintenance.request.deferred.graph</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <graph string="Deferred Backlog" type="bar">
+                <field name="x_target_year"/>
+                <field name="x_estimated_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_backlog_report" model="ir.actions.act_window">
+        <field name="name">Backlog Report</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('x_request_type', '=', 'deferred'), ('stage_id.done', '=', False)]</field>
+    </record>
+</odoo>
