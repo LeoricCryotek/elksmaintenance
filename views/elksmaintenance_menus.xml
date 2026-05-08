@@ -5,98 +5,61 @@
               name="Elks Maintenance"
               sequence="60"
               web_icon="elksmaintenance,static/description/icon.png"
-              groups="group_elksmaint_user"/>
+              groups="elksmaintenance.group_elksmaint_user"/>
 
-    <!-- Dashboard (top) -->
-    <menuitem id="menu_elks_maint_dashboard"
-              name="Dashboard"
+    <!-- Tickets -->
+    <menuitem id="menu_tickets"
+              name="Tickets"
               parent="menu_elks_maint_root"
-              action="action_trustee_dashboard_server"
-              sequence="10"
-              groups="group_elksmaint_user"/>
-
-    <!-- Requests group -->
-    <menuitem id="menu_elks_maint_requests"
-              name="Work Requests"
-              parent="menu_elks_maint_root"
-              sequence="20"/>
-
-    <menuitem id="menu_all_requests"
-              name="All Requests"
-              parent="menu_elks_maint_requests"
-              action="action_all_requests"
               sequence="10"/>
 
-    <menuitem id="menu_deferred_backlog"
-              name="Deferred Backlog"
-              parent="menu_elks_maint_requests"
-              action="action_deferred_backlog"
-              sequence="20"/>
-
-    <!-- Assets group -->
-    <menuitem id="menu_elks_maint_assets"
-              name="Assets"
-              parent="menu_elks_maint_root"
-              sequence="30"/>
-
-    <menuitem id="menu_all_equipment"
-              name="All Assets"
-              parent="menu_elks_maint_assets"
-              action="action_all_equipment"
+    <menuitem id="menu_all_tickets"
+              name="All Tickets"
+              parent="menu_tickets"
+              action="action_all_tickets"
               sequence="10"/>
 
-    <!-- Reports group -->
-    <menuitem id="menu_elks_maint_reports"
+    <menuitem id="menu_open_tickets"
+              name="Open Tickets"
+              parent="menu_tickets"
+              action="action_open_tickets"
+              sequence="20"/>
+
+    <!-- Reports -->
+    <menuitem id="menu_reports"
               name="Reports"
               parent="menu_elks_maint_root"
-              sequence="40"/>
+              sequence="20"
+              groups="elksmaintenance.group_elksmaint_trustee"/>
 
-    <menuitem id="menu_backlog_report"
-              name="Backlog Report"
-              parent="menu_elks_maint_reports"
-              action="action_backlog_report"
+    <menuitem id="menu_meeting_report"
+              name="Meeting Report"
+              parent="menu_reports"
+              action="action_meeting_report_wizard"
               sequence="10"/>
 
-    <menuitem id="menu_capital_plan"
-              name="5-Year Capital Plan"
-              parent="menu_elks_maint_reports"
-              action="action_capital_plan"
-              sequence="20"/>
-
-    <menuitem id="menu_priority_heatmap"
-              name="Priority Heatmap"
-              parent="menu_elks_maint_reports"
-              action="action_priority_heatmap"
-              sequence="30"/>
-
-    <menuitem id="menu_cost_per_sqft"
-              name="Maintenance Cost Trend"
-              parent="menu_elks_maint_reports"
-              action="action_cost_per_sqft"
-              sequence="40"/>
-
-    <menuitem id="menu_open_vs_completed"
-              name="Open vs Completed"
-              parent="menu_elks_maint_reports"
-              action="action_open_vs_completed"
-              sequence="50"/>
-
     <!-- Configuration -->
-    <menuitem id="menu_elks_maint_config"
+    <menuitem id="menu_config"
               name="Configuration"
               parent="menu_elks_maint_root"
               sequence="90"
-              groups="group_elksmaint_manager"/>
+              groups="elksmaintenance.group_elksmaint_manager"/>
 
-    <menuitem id="menu_config_stages"
-              name="Stages"
-              parent="menu_elks_maint_config"
-              action="action_maintenance_stages"
+    <menuitem id="menu_locations"
+              name="Locations"
+              parent="menu_config"
+              action="action_maintenance_locations"
               sequence="10"/>
 
-    <menuitem id="menu_config_teams"
-              name="Teams"
-              parent="menu_elks_maint_config"
-              action="action_maintenance_teams"
+    <menuitem id="menu_stages"
+              name="Stages"
+              parent="menu_config"
+              action="maintenance.hr_equipment_stage_action"
               sequence="20"/>
+
+    <menuitem id="menu_teams"
+              name="Teams"
+              parent="menu_config"
+              action="maintenance.maintenance_team_action_settings"
+              sequence="30"/>
 </odoo>

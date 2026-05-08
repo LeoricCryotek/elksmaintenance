@@ -1,165 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ===== Form view inheritance ===== -->
+
+    <!-- ===== Form view — helpdesk ticket with photos ===== -->
     <record id="view_maintenance_request_form_elks" model="ir.ui.view">
         <field name="name">maintenance.request.form.elks</field>
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
         <field name="arch" type="xml">
-            <!-- Add button for recalculating priority -->
-            <xpath expr="//header" position="inside">
-                <button name="action_recalculate_priority"
-                        type="object"
-                        string="Recalculate Priority"
-                        class="btn-secondary"/>
-                <button name="action_view_budget_entry"
-                        type="object"
-                        string="View Budget Entry"
-                        class="btn-link"
-                        invisible="not x_analytic_entry_id"/>
+            <!-- Add ticket type + location before the description -->
+            <xpath expr="//field[@name='equipment_id']" position="after">
+                <field name="x_ticket_type"/>
+                <field name="x_location_id"/>
+                <field name="x_location_detail"
+                       placeholder="e.g. south wall near exit sign"/>
             </xpath>
 
-            <!-- Insert our fields near the top of the sheet -->
-            <xpath expr="//sheet/group" position="after">
-                <group string="Elks Classification">
+            <!-- Add submitter info + photos + resolution in new tabs -->
+            <xpath expr="//notebook" position="inside">
+
+                <page string="Photos" name="photos">
                     <group>
-                        <field name="x_request_type"/>
-                        <field name="x_risk_type"/>
-                        <field name="x_funding_source"/>
-                        <field name="x_target_year"/>
+                        <group>
+                            <field name="x_photo_1" widget="image"
+                                   options="{'size': [300, 300]}"/>
+                            <field name="x_photo_2" widget="image"
+                                   options="{'size': [300, 300]}"/>
+                            <field name="x_photo_3" widget="image"
+                                   options="{'size': [300, 300]}"/>
+                        </group>
+                        <group>
+                            <field name="x_photo_4" widget="image"
+                                   options="{'size': [300, 300]}"/>
+                            <field name="x_photo_5" widget="image"
+                                   options="{'size': [300, 300]}"/>
+                        </group>
                     </group>
+                </page>
+
+                <page string="Submitter" name="submitter">
                     <group>
-                        <field name="x_priority_score"/>
-                        <field name="x_estimated_cost"/>
-                        <field name="x_actual_cost"/>
-                        <field name="x_cost_variance" readonly="True"/>
-                        <field name="currency_id" invisible="1"/>
+                        <group string="Submitted By">
+                            <field name="x_submitter_name"/>
+                            <field name="x_submitter_email" widget="email"/>
+                            <field name="x_submitter_phone" widget="phone"/>
+                        </group>
+                        <group string="Cost Tracking">
+                            <field name="x_estimated_cost"/>
+                            <field name="x_actual_cost"/>
+                            <field name="x_currency_id" invisible="1"/>
+                        </group>
                     </group>
-                </group>
-                <group string="Accounting &amp; Asset" invisible="x_request_type != 'deferred'">
+                </page>
+
+                <page string="Resolution" name="resolution">
                     <group>
-                        <field name="x_elks_account_id"/>
-                        <field name="x_elks_department_id" readonly="True"/>
+                        <field name="x_resolution_date"/>
                     </group>
-                    <group>
-                        <field name="x_analytic_entry_id" readonly="True"/>
-                        <field name="x_equipment_path" readonly="True"/>
-                        <field name="x_equipment_sq_ft" readonly="True"/>
-                    </group>
-                </group>
+                    <field name="x_resolution_notes"
+                           placeholder="Describe what was done to resolve the issue..."/>
+                </page>
+
             </xpath>
         </field>
     </record>
 
-    <!-- ===== List view inheritance ===== -->
-    <record id="view_maintenance_request_tree_elks" model="ir.ui.view">
-        <field name="name">maintenance.request.tree.elks</field>
+    <!-- ===== List view ===== -->
+    <record id="view_maintenance_request_list_elks" model="ir.ui.view">
+        <field name="name">maintenance.request.list.elks</field>
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_request_view_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//list/field[@name='name']" position="after">
-                <field name="x_request_type" optional="show"/>
-                <field name="x_priority_score" optional="show"/>
-                <field name="x_estimated_cost" optional="show" sum="Total"/>
-                <field name="x_actual_cost" optional="hide" sum="Actual"/>
-                <field name="x_target_year" optional="show"/>
-                <field name="x_risk_type" optional="show"/>
-                <field name="x_funding_source" optional="hide"/>
+            <xpath expr="//field[@name='stage_id']" position="before">
+                <field name="x_ticket_type" optional="show"/>
+                <field name="x_location_id" optional="show"/>
             </xpath>
         </field>
     </record>
 
-    <!-- ===== Kanban view inheritance ===== -->
+    <!-- ===== Kanban view ===== -->
     <record id="view_maintenance_request_kanban_elks" model="ir.ui.view">
         <field name="name">maintenance.request.kanban.elks</field>
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_request_view_kanban"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='priority']" position="after">
-                <field name="x_request_type"/>
-                <field name="x_priority_score"/>
-                <field name="x_estimated_cost"/>
-                <field name="x_target_year"/>
-                <field name="x_risk_type"/>
+            <xpath expr="//kanban/field[@name='archive']" position="after">
+                <field name="x_ticket_type"/>
+                <field name="x_location_id"/>
+                <field name="x_submitter_name"/>
             </xpath>
         </field>
     </record>
 
-    <!-- ===== Search view inheritance ===== -->
+    <!-- ===== Search view ===== -->
     <record id="view_maintenance_request_search_elks" model="ir.ui.view">
         <field name="name">maintenance.request.search.elks</field>
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_request_view_search"/>
         <field name="arch" type="xml">
             <xpath expr="//search" position="inside">
+                <field name="x_submitter_name"/>
+                <field name="x_location_id"/>
                 <separator/>
-                <filter name="filter_deferred" string="Deferred Backlog"
-                        domain="[('x_request_type', '=', 'deferred'),
-                                 ('stage_id.done', '=', False)]"/>
-                <filter name="filter_high_priority" string="High Priority (≥12)"
-                        domain="[('x_priority_score', '&gt;=', 12)]"/>
-                <filter name="filter_safety" string="Safety / Compliance"
-                        domain="[('x_risk_type', 'in', ['safety', 'compliance'])]"/>
-                <filter name="filter_has_target" string="Has Target Year"
-                        domain="[('x_target_year', '!=', False)]"/>
-                <filter name="filter_no_target" string="No Target Year"
-                        domain="[('x_target_year', '=', False)]"/>
+                <filter name="filter_safety"
+                        string="Safety Hazards"
+                        domain="[('x_ticket_type', '=', 'safety')]"/>
+                <filter name="filter_electrical"
+                        string="Electrical"
+                        domain="[('x_ticket_type', '=', 'electrical')]"/>
+                <filter name="filter_plumbing"
+                        string="Plumbing"
+                        domain="[('x_ticket_type', '=', 'plumbing')]"/>
                 <separator/>
-                <group>
-                    <filter name="group_type" string="Request Type"
-                            context="{'group_by': 'x_request_type'}"/>
-                    <filter name="group_target_year" string="Target Year"
-                            context="{'group_by': 'x_target_year'}"/>
-                    <filter name="group_risk" string="Risk"
-                            context="{'group_by': 'x_risk_type'}"/>
-                    <filter name="group_funding" string="Funding Source"
-                            context="{'group_by': 'x_funding_source'}"/>
-                    <filter name="group_gl_account" string="GL Account"
-                            context="{'group_by': 'x_elks_account_id'}"/>
-                    <filter name="group_priority" string="Priority Score"
-                            context="{'group_by': 'x_priority_score'}"/>
-                </group>
+                <filter name="group_type" string="Issue Type"
+                        context="{'group_by': 'x_ticket_type'}"/>
+                <filter name="group_location" string="Location"
+                        context="{'group_by': 'x_location_id'}"/>
             </xpath>
         </field>
     </record>
 
-    <!-- ===== Deferred Backlog dedicated action ===== -->
-    <record id="action_deferred_backlog" model="ir.actions.act_window">
-        <field name="name">Deferred Maintenance Backlog</field>
+    <!-- ===== Actions ===== -->
+    <record id="action_all_tickets" model="ir.actions.act_window">
+        <field name="name">Maintenance Tickets</field>
         <field name="res_model">maintenance.request</field>
-        <field name="view_mode">list,kanban,pivot,graph,form</field>
-        <field name="domain">[('x_request_type', '=', 'deferred'), ('stage_id.done', '=', False)]</field>
-        <field name="context">{
-            'search_default_group_target_year': 1,
-            'search_default_group_risk': 1,
-        }</field>
+        <field name="view_mode">kanban,list,form,pivot,graph,calendar</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No maintenance tickets yet
+            </p>
+            <p>Create a ticket to report a maintenance issue.</p>
+        </field>
     </record>
 
-    <!-- All work requests -->
-    <record id="action_all_requests" model="ir.actions.act_window">
-        <field name="name">Work Requests</field>
+    <record id="action_open_tickets" model="ir.actions.act_window">
+        <field name="name">Open Tickets</field>
         <field name="res_model">maintenance.request</field>
-        <field name="view_mode">kanban,list,pivot,graph,calendar,form</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('stage_id.done', '=', False)]</field>
     </record>
 
-    <!-- All assets -->
-    <record id="action_all_equipment" model="ir.actions.act_window">
-        <field name="name">Assets</field>
-        <field name="res_model">maintenance.equipment</field>
-        <field name="view_mode">list,kanban,form</field>
+    <!-- ===== Meeting report wizard view ===== -->
+    <record id="view_meeting_report_wizard_form" model="ir.ui.view">
+        <field name="name">maintenance.meeting.report.wizard.form</field>
+        <field name="model">maintenance.meeting.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Maintenance Meeting Report">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print_report" type="object"
+                            string="View Report" class="btn-primary"
+                            icon="fa-file-text-o"/>
+                    <button name="action_print_report_pdf" type="object"
+                            string="Download PDF" class="btn-secondary"
+                            icon="fa-file-pdf-o"/>
+                    <button string="Cancel" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
     </record>
 
-    <!-- Stages config -->
-    <record id="action_maintenance_stages" model="ir.actions.act_window">
-        <field name="name">Maintenance Stages</field>
-        <field name="res_model">maintenance.stage</field>
-        <field name="view_mode">list,form</field>
+    <record id="action_meeting_report_wizard" model="ir.actions.act_window">
+        <field name="name">Meeting Report</field>
+        <field name="res_model">maintenance.meeting.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
     </record>
 
-    <!-- Teams config -->
-    <record id="action_maintenance_teams" model="ir.actions.act_window">
-        <field name="name">Maintenance Teams</field>
-        <field name="res_model">maintenance.team</field>
-        <field name="view_mode">list,form</field>
+    <!-- ===== Location list/form ===== -->
+    <record id="view_maintenance_location_list" model="ir.ui.view">
+        <field name="name">maintenance.location.list</field>
+        <field name="model">maintenance.location</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="note"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
     </record>
+
+    <record id="action_maintenance_locations" model="ir.actions.act_window">
+        <field name="name">Locations</field>
+        <field name="res_model">maintenance.location</field>
+        <field name="view_mode">list</field>
+    </record>
+
 </odoo>

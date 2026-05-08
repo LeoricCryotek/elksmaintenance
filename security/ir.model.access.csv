@@ -1,1 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_maintenance_location_user,maintenance.location.user,model_maintenance_location,elksmaintenance.group_elksmaint_user,1,0,0,0
+access_maintenance_location_manager,maintenance.location.manager,model_maintenance_location,elksmaintenance.group_elksmaint_manager,1,1,1,1
+access_meeting_report_wizard_trustee,maintenance.meeting.report.wizard.trustee,model_maintenance_meeting_report_wizard,elksmaintenance.group_elksmaint_trustee,1,1,1,1

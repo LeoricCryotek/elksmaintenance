@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- HTML report action -->
+    <record id="action_report_meeting" model="ir.actions.report">
+        <field name="name">Maintenance Meeting Report</field>
+        <field name="model">maintenance.meeting.report.wizard</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">elksmaintenance.report_meeting</field>
+        <field name="report_file">elksmaintenance.report_meeting</field>
+        <field name="print_report_name">
+            'Maintenance_Meeting_%s_%s' % (object.date_from, object.date_to)
+        </field>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+    </record>
+
+    <!-- Companion PDF report -->
+    <record id="action_report_meeting_pdf" model="ir.actions.report">
+        <field name="name">Maintenance Meeting Report (PDF)</field>
+        <field name="model">maintenance.meeting.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">elksmaintenance.report_meeting</field>
+        <field name="report_file">elksmaintenance.report_meeting</field>
+        <field name="print_report_name">
+            'Maintenance_Meeting_%s_%s' % (object.date_from, object.date_to)
+        </field>
+        <field name="paperformat_id" ref="base.paperformat_us"/>
+    </record>
+
+    <!-- QWeb template -->
+    <template id="report_meeting">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="wizard">
+                <t t-set="data" t-value="wizard._get_report_data()"/>
+                <t t-set="settings"
+                   t-value="wizard.env['elks.lodge.settings'].sudo().search([], limit=1)"
+                   t-if="wizard.env['ir.module.module'].sudo().search([('name','=','elksfrs'),('state','=','installed')], limit=1)"/>
+
+                <div class="page" style="font-size: 11px;">
+
+                    <!-- ===== LODGE HEADER WITH LOGOS ===== -->
+                    <table style="width: 100%; margin-bottom: 10px; border: none;">
+                        <tr>
+                            <!-- Left: Primary Elks USA logo -->
+                            <td style="width: 15%; text-align: center; vertical-align: middle; border: none; padding: 0;">
+                                <t t-if="settings and settings.logo_primary">
+                                    <img t-att-src="image_data_uri(settings.logo_primary)"
+                                         style="max-height: 80px; max-width: 100px;"
+                                         alt="Elks USA"/>
+                                </t>
+                            </td>
+                            <!-- Center: Lodge name and report title -->
+                            <td style="text-align: center; vertical-align: middle; border: none;">
+                                <div t-if="settings" style="font-size: 16px; font-weight: bold;">
+                                    <t t-esc="settings.name"/>
+                                    <t t-if="settings.lodge_number">
+                                        #<t t-esc="settings.lodge_number"/>
+                                    </t>
+                                </div>
+                                <div style="font-size: 14px; font-weight: bold; margin-top: 4px;">
+                                    Maintenance Report for Trustees Meeting
+                                </div>
+                                <div style="font-size: 11px; color: #666; margin-top: 2px;">
+                                    Period: <t t-esc="wizard.date_from" t-options="{'widget': 'date'}"/>
+                                    through <t t-esc="wizard.date_to" t-options="{'widget': 'date'}"/>
+                                </div>
+                            </td>
+                            <!-- Right: Lodge-specific logo -->
+                            <td style="width: 15%; text-align: center; vertical-align: middle; border: none; padding: 0;">
+                                <t t-if="settings and settings.logo_secondary">
+                                    <img t-att-src="image_data_uri(settings.logo_secondary)"
+                                         style="max-height: 80px; max-width: 100px;"
+                                         alt="Lodge Logo"/>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <hr style="border-top: 2px solid #46166a; margin: 8px 0 15px 0;"/>
+
+                    <!-- ===== SUMMARY CARDS ===== -->
+                    <table style="width: 100%; margin-bottom: 20px; border: none;">
+                        <tr>
+                            <td style="width: 50%; padding: 8px; border: none;">
+                                <div style="background: #fff3cd; border: 1px solid #ffc107;
+                                            border-radius: 6px; padding: 15px; text-align: center;">
+                                    <div style="font-size: 28px; font-weight: bold; color: #856404;">
+                                        <t t-esc="data['open_count']"/>
+                                    </div>
+                                    <div style="font-size: 12px; color: #856404; font-weight: bold;">
+                                        OPEN TICKETS
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="width: 50%; padding: 8px; border: none;">
+                                <div style="background: #d4edda; border: 1px solid #28a745;
+                                            border-radius: 6px; padding: 15px; text-align: center;">
+                                    <div style="font-size: 28px; font-weight: bold; color: #155724;">
+                                        <t t-esc="data['closed_count']"/>
+                                    </div>
+                                    <div style="font-size: 12px; color: #155724; font-weight: bold;">
+                                        CLOSED THIS PERIOD
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- ===== OPEN TICKETS TABLE ===== -->
+                    <h4 style="color: #46166a; border-bottom: 1px solid #46166a;
+                               padding-bottom: 4px; margin-bottom: 10px;">
+                        Open Tickets
+                    </h4>
+
+                    <t t-if="data['open_tickets']">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px;">
+                            <thead>
+                                <tr style="background: #46166a; color: white;">
+                                    <th style="padding: 6px 8px; text-align: left; width: 8%;">Date</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 8%;">Type</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 25%;">Title</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 12%;">Location</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 35%;">Description</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 12%;">Stage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="data['open_tickets']" t-as="ticket">
+                                    <tr t-att-style="'background: %s;' % ('#f8f9fa' if ticket_index % 2 else '#ffffff')">
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-esc="ticket.request_date" t-options="{'widget': 'date'}"/>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-esc="dict(ticket._fields['x_ticket_type'].selection).get(ticket.x_ticket_type, '')"/>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6; font-weight: bold;">
+                                            <t t-esc="ticket.name"/>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-if="ticket.x_location_id" t-esc="ticket.x_location_id.name"/>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-if="ticket.description">
+                                                <t t-esc="ticket.description[:120]"/>
+                                                <t t-if="len(ticket.description or '') > 120">...</t>
+                                            </t>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-esc="ticket.stage_id.name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                    <t t-else="">
+                        <p style="color: #28a745; font-style: italic;">
+                            No open tickets at this time.
+                        </p>
+                    </t>
+
+                    <!-- ===== CLOSED TICKETS TABLE ===== -->
+                    <h4 style="color: #46166a; border-bottom: 1px solid #46166a;
+                               padding-bottom: 4px; margin-bottom: 10px;">
+                        Tickets Closed This Period
+                    </h4>
+
+                    <t t-if="data['closed_tickets']">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 10px;">
+                            <thead>
+                                <tr style="background: #28a745; color: white;">
+                                    <th style="padding: 6px 8px; text-align: left; width: 8%;">Closed</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 8%;">Type</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 25%;">Title</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 12%;">Location</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 35%;">Resolution</th>
+                                    <th style="padding: 6px 8px; text-align: left; width: 12%;">Assigned To</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="data['closed_tickets']" t-as="ticket">
+                                    <tr t-att-style="'background: %s;' % ('#f8f9fa' if ticket_index % 2 else '#ffffff')">
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-esc="ticket.close_date" t-options="{'widget': 'date'}"/>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-esc="dict(ticket._fields['x_ticket_type'].selection).get(ticket.x_ticket_type, '')"/>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6; font-weight: bold;">
+                                            <t t-esc="ticket.name"/>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-if="ticket.x_location_id" t-esc="ticket.x_location_id.name"/>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-if="ticket.x_resolution_notes">
+                                                <t t-esc="ticket.x_resolution_notes[:120]"/>
+                                            </t>
+                                            <t t-elif="ticket.description">
+                                                <t t-esc="ticket.description[:120]"/>
+                                            </t>
+                                        </td>
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
+                                            <t t-if="ticket.technician_user_id"
+                                               t-esc="ticket.technician_user_id.name"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                    <t t-else="">
+                        <p style="color: #666; font-style: italic;">
+                            No tickets closed during this period.
+                        </p>
+                    </t>
+
+                    <!-- ===== FOOTER ===== -->
+                    <div style="margin-top: 20px; padding-top: 8px;
+                                border-top: 1px solid #ccc; font-size: 9px;
+                                color: #999; text-align: center;">
+                        Generated from Odoo Elks Maintenance on
+                        <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y at %I:%M %p')"/>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
