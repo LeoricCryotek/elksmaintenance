@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         Snippet template: pre-built form that creates a
+         maintenance.request when submitted.
+
+         Drop this on any website page from the builder's
+         "Contact & Forms" snippet category — appears as
+         "Maintenance Ticket Form".  Comes wired with Title, Issue Type,
+         Location, Description, Submitter Name/Email/Phone, and a file
+         upload (which Odoo automatically attaches to the new ticket).
+         ============================================================ -->
+    <template id="s_maintenance_ticket_form"
+              name="Maintenance Ticket Form">
+        <section class="s_website_form pt16 pb16"
+                 data-vcss="001"
+                 data-snippet="s_maintenance_ticket_form">
+            <div class="container">
+                <form action="/website/form/"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="o_mark_required"
+                      data-mark="*"
+                      data-pre-fill="true"
+                      data-model_name="maintenance.request"
+                      data-success-mode="redirect"
+                      data-success-page="/maintenance/thanks">
+                    <div class="s_website_form_rows row s_col_no_bgcolor">
+
+                        <!-- ── Title (name) — required ─────────────── -->
+                        <div data-name="Field"
+                             class="s_website_form_field mb-3 col-12 s_website_form_required"
+                             data-type="char">
+                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                       style="width: 200px"
+                                       for="elksmaint_name">
+                                    <span class="s_website_form_label_content">Title</span>
+                                    <span class="s_website_form_mark"> *</span>
+                                </label>
+                                <div class="col-sm">
+                                    <input class="form-control s_website_form_input"
+                                           type="text"
+                                           name="name"
+                                           required="1"
+                                           placeholder="e.g. Kitchen cooler not cooling"
+                                           id="elksmaint_name"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Issue Type (many2one to
+                             maintenance.issue.type, populated dynamically
+                             on page load by the form-options interaction
+                             so renames/additions in Configuration →
+                             Issue Types reflect immediately). -->
+                        <div data-name="Field"
+                             class="s_website_form_field mb-3 col-12"
+                             data-type="many2one">
+                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                       style="width: 200px"
+                                       for="elksmaint_type">
+                                    <span class="s_website_form_label_content">Issue Type</span>
+                                </label>
+                                <div class="col-sm">
+                                    <select class="form-select s_website_form_input"
+                                            name="x_ticket_type"
+                                            id="elksmaint_type"
+                                            data-elks-dynamic-options="maintenance.issue.type"
+                                            data-elks-placeholder="— Select an issue type —">
+                                        <option value="">— Loading issue types... —</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Location (many2one to maintenance.location).
+                             Options are filled at runtime by the
+                             ``elksmaintenance.form_location`` public
+                             interaction (see static/src/js/maintenance_form_location.js),
+                             so the dropdown always reflects the current
+                             Lodge Locations list — adds/removes/renames
+                             via Configuration → Lodge Locations show up
+                             on the form on the next page-load, no need
+                             to re-edit the page. -->
+                        <div data-name="Field"
+                             class="s_website_form_field mb-3 col-12"
+                             data-type="many2one">
+                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                       style="width: 200px"
+                                       for="elksmaint_location">
+                                    <span class="s_website_form_label_content">Location</span>
+                                </label>
+                                <div class="col-sm">
+                                    <select class="form-select s_website_form_input"
+                                            name="x_location_id"
+                                            id="elksmaint_location"
+                                            data-elks-dynamic-options="maintenance.location"
+                                            data-elks-placeholder="— Select a location —">
+                                        <option value="">— Loading locations... —</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Description ─────────────────────────── -->
+                        <div data-name="Field"
+                             class="s_website_form_field mb-3 col-12 s_website_form_required"
+                             data-type="text">
+                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                       style="width: 200px"
+                                       for="elksmaint_description">
+                                    <span class="s_website_form_label_content">Description</span>
+                                    <span class="s_website_form_mark"> *</span>
+                                </label>
+                                <div class="col-sm">
+                                    <textarea class="form-control s_website_form_input"
+                                              name="description"
+                                              required="1"
+                                              placeholder="What needs attention? Where is it?"
+                                              id="elksmaint_description"
+                                              rows="4"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Submitter Name ──────────────────────── -->
+                        <div data-name="Field"
+                             class="s_website_form_field mb-3 col-12"
+                             data-type="char">
+                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                       style="width: 200px"
+                                       for="elksmaint_submitter">
+                                    <span class="s_website_form_label_content">Your Name</span>
+                                </label>
+                                <div class="col-sm">
+                                    <input class="form-control s_website_form_input"
+                                           type="text"
+                                           name="x_submitter_name"
+                                           data-fill-with="name"
+                                           id="elksmaint_submitter"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Submitter Email ─────────────────────── -->
+                        <div data-name="Field"
+                             class="s_website_form_field mb-3 col-12"
+                             data-type="email">
+                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                       style="width: 200px"
+                                       for="elksmaint_email">
+                                    <span class="s_website_form_label_content">Your Email</span>
+                                </label>
+                                <div class="col-sm">
+                                    <input class="form-control s_website_form_input"
+                                           type="email"
+                                           name="x_submitter_email"
+                                           data-fill-with="email"
+                                           id="elksmaint_email"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Submitter Phone ─────────────────────── -->
+                        <div data-name="Field"
+                             class="s_website_form_field mb-3 col-12"
+                             data-type="tel">
+                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                       style="width: 200px"
+                                       for="elksmaint_phone">
+                                    <span class="s_website_form_label_content">Your Phone</span>
+                                </label>
+                                <div class="col-sm">
+                                    <input class="form-control s_website_form_input"
+                                           type="tel"
+                                           name="x_submitter_phone"
+                                           data-fill-with="phone"
+                                           id="elksmaint_phone"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Photos (file upload — attached as
+                             ir.attachment to the new ticket) ───────── -->
+                        <div data-name="Field"
+                             class="s_website_form_field mb-3 col-12 s_website_form_custom"
+                             data-type="binary">
+                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                       style="width: 200px"
+                                       for="elksmaint_photos">
+                                    <span class="s_website_form_label_content">Photos</span>
+                                </label>
+                                <div class="col-sm">
+                                    <input class="form-control s_website_form_input"
+                                           type="file"
+                                           name="Photos"
+                                           accept="image/*"
+                                           multiple="multiple"
+                                           id="elksmaint_photos"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ── Submit button ──────────────────────── -->
+                        <div class="mb-0 py-2 col-12 s_website_form_submit text-end s_website_form_no_submit_label"
+                             data-name="Submit Button">
+                            <div style="width: 200px;" class="s_website_form_label"/>
+                            <span id="s_website_form_result"/>
+                            <a href="#" role="button"
+                               class="btn btn-primary s_website_form_send">
+                                Submit Ticket
+                            </a>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </section>
+    </template>
+
+    <!-- ============================================================
+         Register the snippet in the website builder's snippet panel.
+
+         The standard "Form" widget lives in the *Inner Content* panel
+         (XML id ``snippet_content``) in Odoo 19, not under the
+         section-level structure snippets.  We register here so our
+         block sits right next to the built-in Form entry.
+         ============================================================ -->
+    <template id="snippets_maintenance_form"
+              inherit_id="website.snippets"
+              name="Maintenance Form Snippet">
+        <xpath expr="//snippets[@id='snippet_content']//t[@t-snippet='website.s_website_form']"
+               position="after">
+            <t t-snippet="elksmaintenance.s_maintenance_ticket_form"
+               string="Maintenance Form"
+               t-forbid-sanitize="form"
+               t-thumbnail="/website/static/src/img/snippets_thumbs/s_website_form.svg">
+                <keywords>maintenance, ticket, repair, lodge, trustee, submission, request</keywords>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>

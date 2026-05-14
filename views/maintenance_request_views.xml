@@ -7,34 +7,60 @@
         <field name="model">maintenance.request</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
         <field name="arch" type="xml">
-            <!-- Add ticket type + location before the description -->
+
+            <!-- Close Ticket button in header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_close_ticket"
+                        string="Close Ticket"
+                        type="object" class="btn-success"
+                        icon="fa-check-circle"
+                        invisible="stage_id == False"/>
+            </xpath>
+
+            <!-- Add ticket type + location + trustee before the description -->
             <xpath expr="//field[@name='equipment_id']" position="after">
                 <field name="x_ticket_type"/>
                 <field name="x_location_id"/>
                 <field name="x_location_detail"
                        placeholder="e.g. south wall near exit sign"/>
+                <field name="x_eligible_trustee_ids"
+                       invisible="1"/>
+                <field name="x_trustee_id"
+                       options="{'no_create': True, 'no_create_edit': True}"/>
             </xpath>
 
-            <!-- Add submitter info + photos + resolution in new tabs -->
+            <!-- Add submitter info + photos + hours + resolution in tabs -->
             <xpath expr="//notebook" position="inside">
 
-                <page string="Photos" name="photos">
+                <page string="Hours" name="hours">
                     <group>
                         <group>
-                            <field name="x_photo_1" widget="image"
-                                   options="{'size': [300, 300]}"/>
-                            <field name="x_photo_2" widget="image"
-                                   options="{'size': [300, 300]}"/>
-                            <field name="x_photo_3" widget="image"
-                                   options="{'size': [300, 300]}"/>
+                            <field name="x_total_hours" class="fw-bold"/>
                         </group>
                         <group>
-                            <field name="x_photo_4" widget="image"
-                                   options="{'size': [300, 300]}"/>
-                            <field name="x_photo_5" widget="image"
-                                   options="{'size': [300, 300]}"/>
+                            <field name="x_helper_ids" widget="many2many_tags"
+                                   placeholder="Add helpers..."/>
                         </group>
                     </group>
+                    <field name="x_hour_line_ids">
+                        <list string="Hours Logged" editable="bottom">
+                            <field name="worker_id"/>
+                            <field name="date"/>
+                            <field name="hours" sum="Total Hours"/>
+                            <field name="description"/>
+                        </list>
+                    </field>
+                </page>
+
+                <page string="Photos" name="photos">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle"/>
+                        Photos are stored with the ticket's message log.
+                        <b>Scroll to the chatter below</b> and drag-drop
+                        any number of images, or use the
+                        <i class="fa fa-paperclip"/> paperclip button.
+                        Inline previews appear in the conversation.
+                    </div>
                 </page>
 
                 <page string="Submitter" name="submitter">
@@ -56,6 +82,8 @@
                     <group>
                         <field name="x_resolution_date"/>
                     </group>
+                    <!-- elkspurchase inherits this page to inject the
+                         Purchase Orders list below. -->
                     <field name="x_resolution_notes"
                            placeholder="Describe what was done to resolve the issue..."/>
                 </page>
@@ -73,6 +101,8 @@
             <xpath expr="//field[@name='stage_id']" position="before">
                 <field name="x_ticket_type" optional="show"/>
                 <field name="x_location_id" optional="show"/>
+                <field name="x_trustee_id" optional="show"/>
+                <field name="x_total_hours" optional="show" sum="Total"/>
             </xpath>
         </field>
     </record>
@@ -87,6 +117,8 @@
                 <field name="x_ticket_type"/>
                 <field name="x_location_id"/>
                 <field name="x_submitter_name"/>
+                <field name="x_trustee_id"/>
+                <field name="x_total_hours"/>
             </xpath>
         </field>
     </record>
@@ -100,21 +132,32 @@
             <xpath expr="//search" position="inside">
                 <field name="x_submitter_name"/>
                 <field name="x_location_id"/>
+                <field name="x_trustee_id"/>
                 <separator/>
+                <!-- Filter by the stable ``code`` on the issue type
+                     record, so renames in the config page don't break
+                     these quick filters.  ``ref()`` can't be used in
+                     view domains (only in act_window XML records). -->
                 <filter name="filter_safety"
                         string="Safety Hazards"
-                        domain="[('x_ticket_type', '=', 'safety')]"/>
+                        domain="[('x_ticket_type.code', '=', 'safety')]"/>
                 <filter name="filter_electrical"
                         string="Electrical"
-                        domain="[('x_ticket_type', '=', 'electrical')]"/>
+                        domain="[('x_ticket_type.code', '=', 'electrical')]"/>
                 <filter name="filter_plumbing"
                         string="Plumbing"
-                        domain="[('x_ticket_type', '=', 'plumbing')]"/>
+                        domain="[('x_ticket_type.code', '=', 'plumbing')]"/>
+                <separator/>
+                <filter name="filter_my_tickets"
+                        string="My Tickets"
+                        domain="[('x_trustee_id.user_ids', 'in', uid)]"/>
                 <separator/>
                 <filter name="group_type" string="Issue Type"
                         context="{'group_by': 'x_ticket_type'}"/>
                 <filter name="group_location" string="Location"
                         context="{'group_by': 'x_location_id'}"/>
+                <filter name="group_trustee" string="Trustee"
+                        context="{'group_by': 'x_trustee_id'}"/>
             </xpath>
         </field>
     </record>
@@ -123,7 +166,10 @@
     <record id="action_all_tickets" model="ir.actions.act_window">
         <field name="name">Maintenance Tickets</field>
         <field name="res_model">maintenance.request</field>
-        <field name="view_mode">kanban,list,form,pivot,graph,calendar</field>
+        <!-- ``calendar`` removed: requires a <calendar> view, which
+             this module does not ship.  Add it back here together
+             with a calendar view record if needed. -->
+        <field name="view_mode">kanban,list,form,pivot,graph</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No maintenance tickets yet
@@ -137,6 +183,33 @@
         <field name="res_model">maintenance.request</field>
         <field name="view_mode">kanban,list,form</field>
         <field name="domain">[('stage_id.done', '=', False)]</field>
+    </record>
+
+    <!-- ===== Close ticket wizard view ===== -->
+    <record id="view_close_ticket_wizard_form" model="ir.ui.view">
+        <field name="name">elks.close.ticket.wizard.form</field>
+        <field name="model">elks.close.ticket.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Close Ticket">
+                <group>
+                    <field name="request_id" readonly="1"/>
+                    <field name="hours"/>
+                    <field name="create_charity_hours"/>
+                    <field name="done_stage_id" invisible="1"/>
+                </group>
+                <group string="Resolution Notes">
+                    <field name="resolution_notes" nolabel="1"
+                           placeholder="Describe what was done to resolve the issue..."/>
+                </group>
+                <footer>
+                    <button name="action_confirm_close" type="object"
+                            string="Close Ticket" class="btn-primary"
+                            icon="fa-check-circle"/>
+                    <button string="Cancel" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
     </record>
 
     <!-- ===== Meeting report wizard view ===== -->
@@ -172,24 +245,92 @@
         <field name="target">new</field>
     </record>
 
-    <!-- ===== Location list/form ===== -->
+    <!-- ===== Location list (inline editable + drag-to-reorder) ===== -->
     <record id="view_maintenance_location_list" model="ir.ui.view">
         <field name="name">maintenance.location.list</field>
         <field name="model">maintenance.location</field>
         <field name="arch" type="xml">
-            <list editable="bottom">
+            <list editable="bottom" string="Lodge Locations">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="note"/>
-                <field name="active" column_invisible="1"/>
+                <field name="note" optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
         </field>
     </record>
 
+    <!-- ===== Location form (for richer editing of a single location) -->
+    <record id="view_maintenance_location_form" model="ir.ui.view">
+        <field name="name">maintenance.location.form</field>
+        <field name="model">maintenance.location</field>
+        <field name="arch" type="xml">
+            <form string="Lodge Location">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived"
+                            bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name" string="Location Name"/>
+                        <h1>
+                            <field name="name"
+                                   placeholder="e.g. Kitchen, Bar / Lounge, Roof"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <separator string="Description"/>
+                    <field name="note"
+                           placeholder="Optional notes — e.g. 'Includes back kitchen and walk-in cooler' or 'North &amp; south restrooms'."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== Search view (lets users filter by active/archived) ===== -->
+    <record id="view_maintenance_location_search" model="ir.ui.view">
+        <field name="name">maintenance.location.search</field>
+        <field name="model">maintenance.location</field>
+        <field name="arch" type="xml">
+            <search string="Lodge Locations">
+                <field name="name"/>
+                <separator/>
+                <filter name="filter_active"
+                        string="Active"
+                        domain="[('active', '=', True)]"/>
+                <filter name="filter_archived"
+                        string="Archived"
+                        domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
     <record id="action_maintenance_locations" model="ir.actions.act_window">
-        <field name="name">Locations</field>
+        <field name="name">Lodge Locations</field>
         <field name="res_model">maintenance.location</field>
-        <field name="view_mode">list</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_maintenance_location_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add the first lodge location
+            </p>
+            <p>
+                Locations are the places inside the lodge that show up
+                on maintenance tickets (Kitchen, Bar, Roof, RV Park…).
+                Members pick one when reporting an issue, and trustees
+                can filter / group tickets by location.
+            </p>
+            <p>
+                Drag the handle on the left of each row to reorder.
+                Use the <i>Active</i> toggle (or the Archive button on
+                the form view) to hide locations you no longer use
+                without losing history.
+            </p>
+        </field>
     </record>
 
 </odoo>

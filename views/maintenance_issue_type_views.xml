@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===== List (inline editable + drag-to-reorder) ===== -->
+    <record id="view_maintenance_issue_type_list" model="ir.ui.view">
+        <field name="name">maintenance.issue.type.list</field>
+        <field name="model">maintenance.issue.type</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" string="Issue Types">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code" optional="show"/>
+                <field name="color" widget="color_picker" optional="show"/>
+                <field name="note" optional="show"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===== Form (single-record editing) ===== -->
+    <record id="view_maintenance_issue_type_form" model="ir.ui.view">
+        <field name="name">maintenance.issue.type.form</field>
+        <field name="model">maintenance.issue.type</field>
+        <field name="arch" type="xml">
+            <form string="Issue Type">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived"
+                            bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name" string="Issue Type"/>
+                        <h1>
+                            <field name="name"
+                                   placeholder="e.g. Plumbing, HVAC / Climate"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"
+                                   placeholder="e.g. plumbing (auto-derived if blank)"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="color" widget="color_picker"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <separator string="Description"/>
+                    <field name="note"
+                           placeholder="Optional notes — e.g. 'Anything related to water lines, valves, or fixtures.'"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== Search ===== -->
+    <record id="view_maintenance_issue_type_search" model="ir.ui.view">
+        <field name="name">maintenance.issue.type.search</field>
+        <field name="model">maintenance.issue.type</field>
+        <field name="arch" type="xml">
+            <search string="Issue Types">
+                <field name="name"/>
+                <field name="code"/>
+                <separator/>
+                <filter name="filter_active"
+                        string="Active"
+                        domain="[('active', '=', True)]"/>
+                <filter name="filter_archived"
+                        string="Archived"
+                        domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== Action ===== -->
+    <record id="action_maintenance_issue_types"
+            model="ir.actions.act_window">
+        <field name="name">Issue Types</field>
+        <field name="res_model">maintenance.issue.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id"
+               ref="view_maintenance_issue_type_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add your first issue type
+            </p>
+            <p>
+                Issue types are what members pick on a maintenance ticket
+                (Repair, Safety Hazard, Plumbing, HVAC…).  Drag the handle
+                on the left of each row to reorder.  Use the
+                <i>Active</i> toggle to hide unused types from the form
+                without losing history on tickets that referenced them.
+            </p>
+        </field>
+    </record>
+
+</odoo>

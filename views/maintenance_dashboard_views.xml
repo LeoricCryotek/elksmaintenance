@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         Trustee Dashboard — open vs closed maintenance tickets
+         grouped by Assigned Trustee, scoped to the current lodge year.
+         ============================================================ -->
+
+    <!-- Pivot view: rows = Trustee, columns = Open/Closed, measure = count -->
+    <record id="view_maintenance_request_dashboard_pivot"
+            model="ir.ui.view">
+        <field name="name">maintenance.request.dashboard.pivot</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <pivot string="Trustee Maintenance Dashboard"
+                   sample="1" display_quantity="1">
+                <field name="x_trustee_id" type="row"/>
+                <field name="x_is_closed" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph view: bar chart, tickets by trustee, stacked by open/closed -->
+    <record id="view_maintenance_request_dashboard_graph"
+            model="ir.ui.view">
+        <field name="name">maintenance.request.dashboard.graph</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <graph string="Trustee Maintenance Dashboard"
+                   type="bar" stacked="1" sample="1">
+                <field name="x_trustee_id"/>
+                <field name="x_is_closed"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- List view scoped for the dashboard drill-down -->
+    <record id="view_maintenance_request_dashboard_list"
+            model="ir.ui.view">
+        <field name="name">maintenance.request.dashboard.list</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <list string="Trustee Tickets"
+                  decoration-success="x_is_closed"
+                  decoration-warning="not x_is_closed"
+                  sample="1">
+                <field name="name"/>
+                <field name="x_trustee_id"/>
+                <field name="x_ticket_type"/>
+                <field name="x_location_id" optional="show"/>
+                <field name="request_date"/>
+                <field name="x_resolution_date" optional="show"/>
+                <field name="x_total_hours" optional="show" sum="Total"/>
+                <field name="x_lodge_year" optional="hide"/>
+                <field name="x_is_closed" widget="boolean_toggle"
+                       readonly="1"/>
+                <field name="stage_id" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Dedicated search view for the dashboard with lodge year + open/closed
+         filters and trustee grouping pre-configured. -->
+    <record id="view_maintenance_request_dashboard_search"
+            model="ir.ui.view">
+        <field name="name">maintenance.request.dashboard.search</field>
+        <field name="model">maintenance.request</field>
+        <field name="arch" type="xml">
+            <search string="Trustee Dashboard">
+                <field name="x_trustee_id"/>
+                <field name="x_lodge_year"/>
+                <field name="x_ticket_type"/>
+                <separator/>
+                <filter name="dash_current_lodge_year"
+                        string="Current Lodge Year"
+                        domain="[('x_is_current_lodge_year', '=', True)]"/>
+                <separator/>
+                <filter name="dash_open"
+                        string="Open"
+                        domain="[('x_is_closed', '=', False)]"/>
+                <filter name="dash_closed"
+                        string="Closed"
+                        domain="[('x_is_closed', '=', True)]"/>
+                <separator/>
+                <filter name="dash_has_trustee"
+                        string="Has Trustee"
+                        domain="[('x_trustee_id', '!=', False)]"/>
+                <filter name="dash_unassigned"
+                        string="Unassigned"
+                        domain="[('x_trustee_id', '=', False)]"/>
+                <separator/>
+                <!-- Group-By filters are flat at the search element level
+                     in Odoo 19 (no <group expand="1"> wrapper). -->
+                <filter name="dash_group_trustee"
+                        string="Trustee"
+                        context="{'group_by': 'x_trustee_id'}"/>
+                <filter name="dash_group_status"
+                        string="Status"
+                        context="{'group_by': 'x_is_closed'}"/>
+                <filter name="dash_group_lodge_year"
+                        string="Lodge Year"
+                        context="{'group_by': 'x_lodge_year'}"/>
+                <filter name="dash_group_type"
+                        string="Issue Type"
+                        context="{'group_by': 'x_ticket_type'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- The action: opens pivot first, with a default filter that scopes
+         to the current lodge year and groups by trustee. -->
+    <record id="action_trustee_dashboard" model="ir.actions.act_window">
+        <field name="name">Trustee Dashboard</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="view_mode">pivot,graph,list,kanban,form</field>
+        <field name="search_view_id"
+               ref="view_maintenance_request_dashboard_search"/>
+        <field name="context">{
+            "search_default_dash_current_lodge_year": 1,
+            "search_default_dash_group_trustee": 1,
+            "pivot_measures": ["__count"],
+            "pivot_column_groupby": ["x_is_closed"],
+            "pivot_row_groupby": ["x_trustee_id"]
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No maintenance tickets in the current lodge year yet
+            </p>
+            <p>
+                This dashboard shows each Trustee's open vs closed
+                maintenance ticket counts for the current lodge year
+                (April 1 – March 31). Click any cell to drill into the
+                underlying tickets.
+            </p>
+        </field>
+    </record>
+
+</odoo>

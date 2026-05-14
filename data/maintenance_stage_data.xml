@@ -10,30 +10,23 @@
             <field name="fold">False</field>
         </record>
 
-        <record id="stage_in_progress" model="maintenance.stage">
-            <field name="name">In Progress</field>
+        <record id="stage_assigned" model="maintenance.stage">
+            <field name="name">Assigned</field>
             <field name="sequence">2</field>
             <field name="done">False</field>
             <field name="fold">False</field>
         </record>
 
-        <record id="stage_waiting" model="maintenance.stage">
-            <field name="name">Waiting on Parts / Vendor</field>
+        <record id="stage_in_progress" model="maintenance.stage">
+            <field name="name">In Progress</field>
             <field name="sequence">3</field>
             <field name="done">False</field>
             <field name="fold">False</field>
         </record>
 
-        <record id="stage_resolved" model="maintenance.stage">
-            <field name="name">Resolved</field>
+        <record id="stage_done" model="maintenance.stage">
+            <field name="name">Done</field>
             <field name="sequence">4</field>
-            <field name="done">True</field>
-            <field name="fold">True</field>
-        </record>
-
-        <record id="stage_cancelled" model="maintenance.stage">
-            <field name="name">Cancelled</field>
-            <field name="sequence">5</field>
             <field name="done">True</field>
             <field name="fold">True</field>
         </record>

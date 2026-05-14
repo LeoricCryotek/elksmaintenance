@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Default issue types — match the old hard-coded Selection
+             values so the migration can map by ``code``.  Admins can
+             rename, reorder, archive, or add new types in the UI. -->
+
+        <record id="maintenance_issue_type_repair"
+                model="maintenance.issue.type">
+            <field name="name">Repair Needed</field>
+            <field name="code">repair</field>
+            <field name="sequence">10</field>
+            <field name="color">2</field>
+        </record>
+
+        <record id="maintenance_issue_type_safety"
+                model="maintenance.issue.type">
+            <field name="name">Safety Hazard</field>
+            <field name="code">safety</field>
+            <field name="sequence">20</field>
+            <field name="color">1</field>
+        </record>
+
+        <record id="maintenance_issue_type_cleaning"
+                model="maintenance.issue.type">
+            <field name="name">Cleaning / Janitorial</field>
+            <field name="code">cleaning</field>
+            <field name="sequence">30</field>
+            <field name="color">10</field>
+        </record>
+
+        <record id="maintenance_issue_type_electrical"
+                model="maintenance.issue.type">
+            <field name="name">Electrical</field>
+            <field name="code">electrical</field>
+            <field name="sequence">40</field>
+            <field name="color">3</field>
+        </record>
+
+        <record id="maintenance_issue_type_plumbing"
+                model="maintenance.issue.type">
+            <field name="name">Plumbing</field>
+            <field name="code">plumbing</field>
+            <field name="sequence">50</field>
+            <field name="color">4</field>
+        </record>
+
+        <record id="maintenance_issue_type_hvac"
+                model="maintenance.issue.type">
+            <field name="name">HVAC / Climate</field>
+            <field name="code">hvac</field>
+            <field name="sequence">60</field>
+            <field name="color">5</field>
+        </record>
+
+        <record id="maintenance_issue_type_exterior"
+                model="maintenance.issue.type">
+            <field name="name">Exterior / Grounds</field>
+            <field name="code">exterior</field>
+            <field name="sequence">70</field>
+            <field name="color">6</field>
+        </record>
+
+        <record id="maintenance_issue_type_other"
+                model="maintenance.issue.type">
+            <field name="name">Other</field>
+            <field name="code">other</field>
+            <field name="sequence">99</field>
+            <field name="color">0</field>
+        </record>
+
+    </data>
+</odoo>

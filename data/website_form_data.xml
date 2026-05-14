@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ``noupdate="1"``: the form-access flags live on a row owned by
+         the core ``maintenance`` module — without noupdate, every
+         upgrade of elksmaintenance would silently rewrite admin
+         changes (e.g. someone turning website_form_access off again
+         to lock the form to admins). -->
+    <data noupdate="1">
+
+        <!-- Enable the Odoo website Form widget to target
+             maintenance.request.  After this loads, the builder's
+             Form > Action dropdown gets a new entry: "Create a
+             Maintenance Ticket".
+
+             We reference the existing ir.model record created by the
+             core ``maintenance`` module (xml_id =
+             ``maintenance.model_maintenance_request``) rather than
+             creating a new one. -->
+        <record id="maintenance.model_maintenance_request"
+                model="ir.model">
+            <field name="website_form_access">True</field>
+            <field name="website_form_label">Create a Maintenance Ticket</field>
+            <field name="website_form_key">create_maintenance_ticket</field>
+        </record>
+
+    </data>
+
+    <!-- The whitelist call lives in a regular (updatable) <data> block
+         so adding a new field name to this list and bumping the module
+         is enough to expose it in the form builder.  The function
+         flips ``website_form_blacklisted`` on the specific fields. -->
+    <data>
+        <function model="ir.model.fields" name="formbuilder_whitelist">
+            <value>maintenance.request</value>
+            <value eval="[
+                'name',
+                'description',
+                'priority',
+                'x_ticket_type',
+                'x_location_id',
+                'x_location_detail',
+                'x_submitter_name',
+                'x_submitter_email',
+                'x_submitter_phone',
+                'x_estimated_cost',
+            ]"/>
+        </function>
+    </data>
+</odoo>

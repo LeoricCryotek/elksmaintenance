@@ -25,6 +25,14 @@
               action="action_open_tickets"
               sequence="20"/>
 
+    <!-- Dashboard -->
+    <menuitem id="menu_trustee_dashboard"
+              name="Trustee Dashboard"
+              parent="menu_elks_maint_root"
+              action="action_trustee_dashboard"
+              sequence="5"
+              groups="elksmaintenance.group_elksmaint_user"/>
+
     <!-- Reports -->
     <menuitem id="menu_reports"
               name="Reports"
@@ -46,10 +54,30 @@
               groups="elksmaintenance.group_elksmaint_manager"/>
 
     <menuitem id="menu_locations"
-              name="Locations"
+              name="Lodge Locations"
               parent="menu_config"
               action="action_maintenance_locations"
               sequence="10"/>
+
+    <menuitem id="menu_issue_types"
+              name="Issue Types"
+              parent="menu_config"
+              action="action_maintenance_issue_types"
+              sequence="15"/>
+
+    <!-- Mirror entries under the standard Odoo Maintenance app's
+         Configuration submenu so admins can find them in either place. -->
+    <menuitem id="menu_maintenance_locations_core"
+              name="Lodge Locations"
+              parent="maintenance.menu_maintenance_configuration"
+              action="action_maintenance_locations"
+              sequence="4"/>
+
+    <menuitem id="menu_maintenance_issue_types_core"
+              name="Issue Types"
+              parent="maintenance.menu_maintenance_configuration"
+              action="action_maintenance_issue_types"
+              sequence="5"/>
 
     <menuitem id="menu_stages"
               name="Stages"

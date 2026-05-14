@@ -132,7 +132,7 @@
                                             <t t-esc="ticket.request_date" t-options="{'widget': 'date'}"/>
                                         </td>
                                         <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
-                                            <t t-esc="dict(ticket._fields['x_ticket_type'].selection).get(ticket.x_ticket_type, '')"/>
+                                            <t t-esc="ticket.x_ticket_type.name or ''"/>
                                         </td>
                                         <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6; font-weight: bold;">
                                             <t t-esc="ticket.name"/>
@@ -185,7 +185,7 @@
                                             <t t-esc="ticket.close_date" t-options="{'widget': 'date'}"/>
                                         </td>
                                         <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6;">
-                                            <t t-esc="dict(ticket._fields['x_ticket_type'].selection).get(ticket.x_ticket_type, '')"/>
+                                            <t t-esc="ticket.x_ticket_type.name or ''"/>
                                         </td>
                                         <td style="padding: 5px 8px; border-bottom: 1px solid #dee2e6; font-weight: bold;">
                                             <t t-esc="ticket.name"/>
