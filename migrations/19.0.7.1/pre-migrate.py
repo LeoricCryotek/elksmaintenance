@@ -46,10 +46,13 @@ def migrate(cr, version):
         return
 
     # Find any view row that still references the dead photo fields.
-    # Use ILIKE so we catch both <field name="x_photo_1"> and any other
-    # textual occurrence (e.g. domain= expressions, invisible= attrs).
+    # Use ILIKE on ``arch_db::text`` — ``arch_db`` is a JSONB column in
+    # Odoo 19 (stores translations as ``{"en_US": "<view xml>"}``), so
+    # ILIKE only works after casting to text.  Casting is cheap; the
+    # view set is small.  Pattern matches the field name inside the
+    # JSON string regardless of which language key wraps it.
     like_clauses = " OR ".join(
-        ["arch_db ILIKE %s"] * len(DEAD_FIELDS)
+        ["arch_db::text ILIKE %s"] * len(DEAD_FIELDS)
     )
     params = [f"%{name}%" for name in DEAD_FIELDS]
     cr.execute(
