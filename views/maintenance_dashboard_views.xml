@@ -110,7 +110,7 @@
     <!-- The action: opens pivot first, with a default filter that scopes
          to the current lodge year and groups by trustee. -->
     <record id="action_trustee_dashboard" model="ir.actions.act_window">
-        <field name="name">Trustee Dashboard</field>
+        <field name="name">Trustee Dashboard (Tickets)</field>
         <field name="res_model">maintenance.request</field>
         <field name="view_mode">pivot,graph,list,kanban,form</field>
         <field name="search_view_id"
@@ -131,6 +131,179 @@
                 maintenance ticket counts for the current lodge year
                 (April 1 – March 31). Click any cell to drill into the
                 underlying tickets.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Trustee Summary dashboard — one big tile per trustee.
+         Each card shows open count (big), a progress bar of close
+         rate, total hours logged, and average days to close.
+         Built on the SQL-view model elks.maintenance.trustee.summary
+         so each row already has all the aggregates pre-computed.
+         ============================================================ -->
+
+    <record id="view_trustee_summary_search"
+            model="ir.ui.view">
+        <field name="name">elks.maintenance.trustee.summary.search</field>
+        <field name="model">elks.maintenance.trustee.summary</field>
+        <field name="arch" type="xml">
+            <search string="Trustee Summary">
+                <field name="trustee_id"/>
+                <field name="lodge_year"/>
+                <separator/>
+                <filter name="has_open"
+                        string="Has Open Tickets"
+                        domain="[('open_count', '>', 0)]"/>
+                <separator/>
+                <filter name="group_lodge_year"
+                        string="Lodge Year"
+                        context="{'group_by': 'lodge_year'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_trustee_summary_kanban"
+            model="ir.ui.view">
+        <field name="name">elks.maintenance.trustee.summary.kanban</field>
+        <field name="model">elks.maintenance.trustee.summary</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard o_emphasize_colors"
+                    sample="1"
+                    create="false">
+                <field name="trustee_id"/>
+                <field name="lodge_year"/>
+                <field name="open_count"/>
+                <field name="closed_count"/>
+                <field name="total_count"/>
+                <field name="close_rate"/>
+                <field name="total_hours"/>
+                <field name="avg_resolution_days"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex flex-column h-100 p-2">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="flex-grow-1">
+                                    <strong class="fs-5">
+                                        <field name="trustee_id"/>
+                                    </strong>
+                                    <div class="text-muted small">
+                                        Lodge Year
+                                        <field name="lodge_year"/>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="display-6 fw-bold text-warning"
+                                         t-att-title="'Open tickets'">
+                                        <field name="open_count"/>
+                                    </div>
+                                    <div class="text-muted small">Open</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between small">
+                                    <span>Close rate</span>
+                                    <span>
+                                        <field name="close_rate"
+                                               widget="float"
+                                               digits="[3,0]"/>%
+                                    </span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success"
+                                         role="progressbar"
+                                         t-attf-style="width: #{record.close_rate.raw_value}%;"
+                                         t-att-aria-valuenow="record.close_rate.raw_value"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"/>
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mt-auto small">
+                                <div class="col-4 text-center">
+                                    <div class="fw-bold">
+                                        <field name="closed_count"/>
+                                    </div>
+                                    <div class="text-muted">Closed</div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="fw-bold">
+                                        <field name="total_hours"
+                                               widget="float"
+                                               digits="[10,1]"/>
+                                    </div>
+                                    <div class="text-muted">Hours</div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="fw-bold">
+                                        <field name="avg_resolution_days"
+                                               widget="float"
+                                               digits="[10,1]"/>
+                                    </div>
+                                    <div class="text-muted">Avg Days</div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_trustee_summary_list"
+            model="ir.ui.view">
+        <field name="name">elks.maintenance.trustee.summary.list</field>
+        <field name="model">elks.maintenance.trustee.summary</field>
+        <field name="arch" type="xml">
+            <list string="Trustee Summary" create="false" delete="false"
+                  decoration-warning="open_count > 0"
+                  decoration-success="open_count == 0 and total_count > 0">
+                <field name="trustee_id"/>
+                <field name="lodge_year"/>
+                <field name="open_count" sum="Open"/>
+                <field name="closed_count" sum="Closed"/>
+                <field name="total_count" sum="Total"/>
+                <field name="close_rate" widget="progressbar"/>
+                <field name="total_hours" sum="Hours" widget="float"
+                       digits="[10,1]"/>
+                <field name="avg_resolution_days" widget="float"
+                       digits="[10,1]"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_trustee_summary_graph"
+            model="ir.ui.view">
+        <field name="name">elks.maintenance.trustee.summary.graph</field>
+        <field name="model">elks.maintenance.trustee.summary</field>
+        <field name="arch" type="xml">
+            <graph string="Open Tickets by Trustee" type="bar"
+                   sample="1">
+                <field name="trustee_id"/>
+                <field name="open_count" type="measure"/>
+                <field name="closed_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_trustee_summary_dashboard"
+            model="ir.actions.act_window">
+        <field name="name">Lodge Maintenance Dashboard</field>
+        <field name="res_model">elks.maintenance.trustee.summary</field>
+        <field name="view_mode">kanban,list,graph</field>
+        <field name="search_view_id"
+               ref="view_trustee_summary_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Lodge maintenance dashboard
+            </p>
+            <p>
+                One tile per Trustee shows their current open ticket
+                count (big number), close-rate progress bar, total
+                hours logged, and average days to close.  Drill into
+                ticket lists from <i>Tickets → All Tickets</i> or
+                <i>Trustee Dashboard (Tickets)</i>.
             </p>
         </field>
     </record>

@@ -25,12 +25,28 @@
               action="action_open_tickets"
               sequence="20"/>
 
-    <!-- Dashboard -->
-    <menuitem id="menu_trustee_dashboard"
-              name="Trustee Dashboard"
+    <!-- Dashboards -->
+    <menuitem id="menu_dashboards"
+              name="Dashboard"
               parent="menu_elks_maint_root"
-              action="action_trustee_dashboard"
               sequence="5"
+              groups="elksmaintenance.group_elksmaint_user"/>
+
+    <!-- Stat-card kanban: one tile per trustee, big numbers, progress
+         bars, average time-to-close.  This is the at-a-glance view. -->
+    <menuitem id="menu_trustee_summary_dashboard"
+              name="Lodge Dashboard"
+              parent="menu_dashboards"
+              action="action_trustee_summary_dashboard"
+              sequence="1"
+              groups="elksmaintenance.group_elksmaint_user"/>
+
+    <!-- Pivot/graph drill-down across individual tickets. -->
+    <menuitem id="menu_trustee_dashboard"
+              name="Trustee Dashboard (Tickets)"
+              parent="menu_dashboards"
+              action="action_trustee_dashboard"
+              sequence="10"
               groups="elksmaintenance.group_elksmaint_user"/>
 
     <!-- Reports -->

@@ -4,6 +4,7 @@ access_maintenance_location_manager,maintenance.location.manager,model_maintenan
 access_maintenance_issue_type_public,maintenance.issue.type.public,model_maintenance_issue_type,base.group_public,1,0,0,0
 access_maintenance_issue_type_user,maintenance.issue.type.user,model_maintenance_issue_type,elksmaintenance.group_elksmaint_user,1,0,0,0
 access_maintenance_issue_type_manager,maintenance.issue.type.manager,model_maintenance_issue_type,elksmaintenance.group_elksmaint_manager,1,1,1,1
+access_trustee_summary_user,elks.maintenance.trustee.summary.user,model_elks_maintenance_trustee_summary,elksmaintenance.group_elksmaint_user,1,0,0,0
 access_meeting_report_wizard_trustee,maintenance.meeting.report.wizard.trustee,model_maintenance_meeting_report_wizard,elksmaintenance.group_elksmaint_trustee,1,1,1,1
 access_maintenance_hour_user,elks.maintenance.hour.user,model_elks_maintenance_hour,elksmaintenance.group_elksmaint_user,1,0,0,0
 access_maintenance_hour_trustee,elks.maintenance.hour.trustee,model_elks_maintenance_hour,elksmaintenance.group_elksmaint_trustee,1,1,1,1
