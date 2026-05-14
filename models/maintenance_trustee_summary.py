@@ -37,8 +37,9 @@ class TrusteeMaintenanceSummary(models.Model):
     )
 
     def init(self):
-        tools.drop_view_if_exists(self._cr, self._table)
-        self._cr.execute(
+        # Odoo 19 deprecated ``self._cr`` — use ``self.env.cr``.
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        self.env.cr.execute(
             f"""
             CREATE OR REPLACE VIEW {self._table} AS (
                 SELECT

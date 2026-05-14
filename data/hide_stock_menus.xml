@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ``noupdate="1"`` — admins can re-enable visibility manually
+         (Settings → Technical → Menu Items → "Maintenance" → Groups)
+         and the next module upgrade won't clobber their override. -->
+    <data noupdate="1">
+
+        <!-- Hide the stock Maintenance app from regular users.
+             elksmaintenance still depends on the maintenance module
+             (it's where ``maintenance.request`` lives), but the
+             top-level app menu is now visible only to users in the
+             "Technical Features" group (base.group_no_one) — i.e. only
+             admins with Developer Mode enabled.
+
+             Lodge users see the Elks Maintenance app exclusively. -->
+        <record id="maintenance.menu_maintenance_title"
+                model="ir.ui.menu">
+            <field name="groups_id"
+                   eval="[(6, 0, [ref('base.group_no_one')])]"/>
+        </record>
+
+    </data>
+</odoo>

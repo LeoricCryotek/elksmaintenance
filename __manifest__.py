@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Elks Lodge Maintenance Tickets",
-    "version": "19.0.8.0",
+    "version": "19.0.8.1",
     "category": "Operations/Maintenance",
     "summary": "Helpdesk-style maintenance ticket system with trustee assignment, "
                "hour tracking, charity integration, and public submission form.",
@@ -45,6 +45,7 @@ Features
         "data/maintenance_location_data.xml",
         "data/maintenance_issue_type_data.xml",
         "data/website_form_data.xml",
+        "data/hide_stock_menus.xml",
         "views/maintenance_issue_type_views.xml",
         "views/maintenance_request_views.xml",
         "views/maintenance_dashboard_views.xml",
