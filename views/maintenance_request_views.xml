@@ -54,11 +54,11 @@
 
                 <page string="Photos" name="photos">
                     <div class="alert alert-info" role="alert">
-                        <i class="fa fa-info-circle"/>
+                        <i class="fa fa-info-circle" title="Info"/>
                         Photos are stored with the ticket's message log.
                         <b>Scroll to the chatter below</b> and drag-drop
                         any number of images, or use the
-                        <i class="fa fa-paperclip"/> paperclip button.
+                        <i class="fa fa-paperclip" title="Attachment"/> paperclip button.
                         Inline previews appear in the conversation.
                     </div>
                 </page>
